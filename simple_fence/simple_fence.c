@@ -40,8 +40,10 @@ void *fn2(void *args)
 		/* barrier_wait(&barrier); */
 		pthread_barrier_wait(&barrier);
 
-		if (Y == 1 && X == 0)
+		if (Y == 1 && X == 0) {
 			nr_fails++;
+			printf("Failure!\n");
+		}
 
 		X = Y = 0;
 		pthread_barrier_wait(&barrier);
