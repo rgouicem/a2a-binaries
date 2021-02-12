@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
 
 /* #include <threads.h> */
@@ -6,7 +7,7 @@
 
 /* #include "barrier.h" */
 
-#define LOOPS 10000000
+#define LOOPS 100
 
 static int X, Y;
 
@@ -47,13 +48,17 @@ void *fn2(void *args)
 	return 0;
 }
 
-int main()
+int main(int argc, char **argv)
 {
 	/* thrd_t threads[2]; */
 	pthread_t threads[2];
 
+	if (argc > 1)
+		nr_tests = atoi(argv[1]);
+	else
+		nr_tests = LOOPS;
+
 	nr_fails = 0;
-	nr_tests = LOOPS;
 
 	/* barrier_init(&barrier, 2); */
 	pthread_barrier_init(&barrier, NULL, 2);
@@ -68,9 +73,7 @@ int main()
 	pthread_join(threads[0], NULL);
 	pthread_join(threads[1], NULL);
 
-	printf("\n"
-	       "Results:\n"
-	       "Tests run: %d\n"
+	printf("Tests run: %d\n"
 	       "\tFailed: %d\n"
 	       "\tSuccess: %d\n",
 	       nr_tests, nr_fails, nr_tests - nr_fails);
