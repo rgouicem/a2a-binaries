@@ -23,6 +23,7 @@ void *fn1(void *args)
 		/* printf("thread 1: Loop %d barrier\n", i); */
 		/* barrier_wait(&barrier); */
 		pthread_barrier_wait(&barrier);
+		pthread_barrier_wait(&barrier);
 
 		X = 1;
 		Y = 1;
@@ -43,6 +44,7 @@ void *fn2(void *args)
 			nr_fails++;
 
 		X = Y = 0;
+		pthread_barrier_wait(&barrier);
 	}
 
 	return 0;
@@ -66,7 +68,6 @@ int main(int argc, char **argv)
 	/* thrd_create(threads + 1, fn2, NULL); */
 	pthread_create(threads, NULL, fn1, NULL);
 	pthread_create(threads + 1, NULL, fn2, NULL);
-
 
 	/* thrd_join(threads[0], NULL); */
 	/* thrd_join(threads[1], NULL); */
