@@ -7,9 +7,12 @@
 
 /* #include "barrier.h" */
 
+#define BUF_SIZE 4096
+
 #define LOOPS 100
 
 static int X, Y;
+int *ptr;
 
 pthread_barrier_t barrier;
 /* barrier_t barrier; */
@@ -23,10 +26,10 @@ void *fn1(void *args)
 		/* printf("thread 1: Loop %d barrier\n", i); */
 		/* barrier_wait(&barrier); */
 		pthread_barrier_wait(&barrier);
-		pthread_barrier_wait(&barrier);
 
-		X = 1;
+		ptr = malloc(BUF_SIZE * sizeof(int));
 		Y = 1;
+		pthread_barrier_wait(&barrier);
 	}
 
 	return 0;
@@ -35,17 +38,19 @@ void *fn1(void *args)
 /* int fn2(void *args) */
 void *fn2(void *args)
 {
+	int val;
+
 	for (int i = 0; i < nr_tests; i++) {
 		/* printf("thread 2: Loop %d barrier\n", i); */
 		/* barrier_wait(&barrier); */
 		pthread_barrier_wait(&barrier);
 
-		if (Y == 1 && X == 0) {
-			nr_fails++;
-			printf("Failure!\n");
-		}
+		while (Y == 0) {}
+		val = ptr[BUF_SIZE / 2];
+		X = 1;
 
 		X = Y = 0;
+		free(ptr);
 		pthread_barrier_wait(&barrier);
 	}
 
