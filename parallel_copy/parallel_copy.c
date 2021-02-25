@@ -17,7 +17,7 @@ void *copy(void *arg)
 	for (unsigned long i = 0; i < my_size / sizeof(int); i++) {
 		int tmp = start[i];
 
-		cpy[id * my_size / sizeof(int) + i] = tmp * rand();
+		cpy[id * my_size / sizeof(int) + i] = tmp * 9 + 42;
 	}
 
 	return NULL;
