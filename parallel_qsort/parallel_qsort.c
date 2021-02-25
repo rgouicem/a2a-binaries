@@ -13,20 +13,36 @@ int *buf, *cpy;
 unsigned long buf_size = 1024;
 int nr_threads = 2;
 
-void *copy(void *arg)
+int cmp(const void *a, const void *b)
+{
+	return *(int *)a - *(int *)b;
+}
+
+void *fn(void *arg)
 {
 	long id = (long) arg;
 	int my_size = buf_size / nr_threads;
 	int *start = (void *)buf + my_size * id;
 
-	for (unsigned long i = 0; i < my_size / sizeof(int); i++) {
-		int tmp = start[i];
-
-		cpy[id * my_size / sizeof(int) + i] = tmp * 9 + 42;
-	}
+	qsort(start, my_size / sizeof(int), sizeof(int), cmp);
 
 	return NULL;
 }
+
+/* void *fn(void *arg) */
+/* { */
+/* 	long id = (long) arg; */
+/* 	int my_size = buf_size / nr_threads; */
+/* 	int *start = (void *)buf + my_size * id; */
+
+/* 	for (unsigned long i = 0; i < my_size / sizeof(int); i++) { */
+/* 		int tmp = start[i]; */
+
+/* 		cpy[id * my_size / sizeof(int) + i] = tmp * 9 + 42; */
+/* 	} */
+
+/* 	return NULL; */
+/* } */
 
 int main(int argc, char **argv)
 {
@@ -60,7 +76,7 @@ int main(int argc, char **argv)
 	// create threads
 	tids = malloc(nr_threads * sizeof(pthread_t));
 	for (long i = 0; i < nr_threads; i++) {
-		pthread_create(tids + i, NULL, copy, (void *)i);
+		pthread_create(tids + i, NULL, fn, (void *)i);
 	}
 
 	// join threads
